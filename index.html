@@ -5,19 +5,37 @@
   <title>My Audio</title>
 </head>
 <body>
-  <h1>测试音频播放</h1>
+  <h1>我的音频</h1>
+  <ul id="playlist"></ul>
 
-  <p>MP3 示例：</p>
-  <audio controls>
-    <source src="audio/song1.mp3" type="audio/mpeg">
-    你的浏览器不支持 audio 标签
-  </audio>
+  <script>
+    // 仓库用户名和仓库名，请改成你自己的
+    const USER = "lekwi6017-source";
+    const REPO = "my-audio";
 
-  <p>M4A 示例：</p>
-  <audio controls>
-    <source src="audio/song2.m4a" type="audio/mp4">
-    你的浏览器不支持 audio 标签
-  </audio>
+    // GitHub API: 列出 audio/ 目录下的文件
+    const apiUrl = `https://api.github.com/repos/${USER}/${REPO}/contents/audio`;
 
+    async function loadPlaylist() {
+      const res = await fetch(apiUrl);
+      const files = await res.json();
+
+      const list = document.getElementById("playlist");
+      list.innerHTML = "";
+
+      files
+        .filter(f => f.type === "file" && (f.name.endsWith(".mp3") || f.name.endsWith(".m4a")))
+        .forEach(f => {
+          const li = document.createElement("li");
+          li.innerHTML = `
+            <p>${f.name}</p>
+            <audio controls src="https://${USER}.github.io/${REPO}/audio/${f.name}"></audio>
+          `;
+          list.appendChild(li);
+        });
+    }
+
+    loadPlaylist();
+  </script>
 </body>
 </html>
